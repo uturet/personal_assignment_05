@@ -22,14 +22,6 @@
       }
     },
     "/users/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
       "post": {
         "description": "Create new user",
         "parameters": [
