@@ -23,10 +23,10 @@
     },
     "/users/": {
       "get": {
-        "description": "Get all users",
+        "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
+          "default": {
+            "description": ""
           }
         }
       },
@@ -46,9 +46,6 @@
                   "example": "any"
                 },
                 "email": {
-                  "example": "any"
-                },
-                "password": {
                   "example": "any"
                 },
                 "subscribet_to": {
@@ -116,12 +113,6 @@
                   "example": "any"
                 },
                 "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                },
-                "subscribet_to": {
                   "example": "any"
                 }
               }
