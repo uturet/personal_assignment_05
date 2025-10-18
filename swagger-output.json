@@ -5,7 +5,7 @@
     "description": "API for managing users and events with subscription-driven visibility.",
     "version": "1.0.0"
   },
-  "host": "https://personal-assignment-05.onrender.com",
+  "host": "personal-assignment-05.onrender.com",
   "basePath": "/",
   "schemes": [
     "https"
