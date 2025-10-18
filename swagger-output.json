@@ -5,10 +5,10 @@
     "description": "API for managing users and events with subscription-driven visibility.",
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "https://personal-assignment-05.onrender.com",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "paths": {
     "/api-docs": {
