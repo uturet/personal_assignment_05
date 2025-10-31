@@ -8,7 +8,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const getCollection = () => mongodb.getDb().collection(USERS_COLLECTION);
 
 const ensurePlainObject = (value) =>
-  value && typeof value === 'object' && !Array.isArray(value) ? value : null;
+  value && typeof value  && !Array.isArray(value) ? value : null;
 
 const toHexString = (value) => {
   if (value === undefined || value === null) {
@@ -28,10 +28,36 @@ const formatUser = (doc) => ({
     : [],
 });
 
-const validateUserPayload = (payload, { requireAllFields = false } = {}) => {
-  const body = ensurePlainObject(payload);
+const validFieldTypes = [
+  "string",
+  "email",
+  "number",
+  "date",
+  "ownerId",
+  "options"
+]
 
-  if (!body) {
+/*
+
+fields = [
+    {
+      name: "email",
+      type: "email",
+      required: true
+    },
+    {
+      name: "visibility",
+      type: "options",
+      required: true,
+      template: Array()
+    }
+
+]
+
+*/
+
+const validateUserPayload = (body, fields) => {
+  if (body && typeof body === 'object') {
     throw new ValidationError('Invalid user payload.', [
       {
         field: 'body',
