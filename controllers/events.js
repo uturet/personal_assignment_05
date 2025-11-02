@@ -10,55 +10,6 @@ const getCollection = () => mongodb.getDb().collection(EVENTS_COLLECTION);
 const ensurePlainObject = (value) =>
   value && typeof value === 'object' && !Array.isArray(value) ? value : null;
 
-const createFieldError = (field, message) =>
-  new ValidationError('Invalid event payload.', [
-    {
-      field,
-      message,
-    },
-  ]);
-
-const parseDateField = (value, fieldName) => {
-  if (value === undefined || value === null) {
-    throw createFieldError(fieldName, `${fieldName} is required.`);
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    throw createFieldError(fieldName, `${fieldName} must be a valid date.`);
-  }
-
-  return date;
-};
-
-const parseStringField = (value, fieldName) => {
-  if (value === undefined || value === null) {
-    throw createFieldError(fieldName, `${fieldName} is required.`);
-  }
-
-  if (typeof value !== 'string') {
-    throw createFieldError(fieldName, `${fieldName} must be a string.`);
-  }
-  
-  const trimmed = value.trim();
-  if (!trimmed) {
-    throw createFieldError(fieldName, `${fieldName} must be a non-empty string.`);
-  }
-
-  return trimmed;
-};
-
-const parseOwnerId = (value) => {
-  const ownerId = parseStringField(value, 'ownerID');
-
-  if (!ObjectId.isValid(ownerId)) {
-    throw createFieldError('ownerID', 'ownerID must be a valid Mongo ObjectId string.');
-  }
-
-  return ownerId;
-};
-
 const buildEventDocument = (payload) => {
   const body = ensurePlainObject(payload);
 
@@ -165,10 +116,49 @@ exports.createEvent = async (req, res) => {
   /*
     #swagger.description = 'Create new event'
   */
-  let eventDocument;
+  let payload;
 
   try {
-    eventDocument = buildEventDocument(req.body);
+    payload = validateUserPayload(req.body, [
+      {
+        name: "ownerID",
+        type: "ownerId",
+        required: true,
+      },
+      {
+        name: "visibility",
+        type: "options",
+        required: true,
+        options: VISIBILITY_OPTIONS
+      },
+      {
+        name: "googlePoint",
+        type: "string",
+      },
+      {
+        name: "description",
+        type: "string",
+        required: true,
+      },
+      {
+        name: "datetime_start",
+        type: "date",
+        required: true,
+      },
+      {
+        name: "datetime_end",
+        type: "date",
+        required: true,
+      },
+      {
+        name: "period",
+        type: "date",
+      },
+      {
+        name: "repeatUntil",
+        type: "date",
+      },
+    ]);
   } catch (error) {
     if (error instanceof ValidationError) {
       return res.status(400).json({ message: error.message, details: error.details });
@@ -179,7 +169,7 @@ exports.createEvent = async (req, res) => {
   }
 
   try {
-    const result = await getCollection().insertOne(eventDocument);
+    const result = await getCollection().insertOne(payload);
     return res.status(201).json({ id: result.insertedId.toString() });
   } catch (error) {
     console.error('Error creating event', error);
@@ -197,10 +187,40 @@ exports.updateEvent = async (req, res) => {
     return res.status(400).json({ message: 'Invalid event id format.' });
   }
 
-  let updateFields;
+  let payload;
 
   try {
-    updateFields = buildEventDocument(req.body);
+    payload = payload = validateUserPayload(req.body, [
+      {
+        name: "visibility",
+        type: "options",
+        options: VISIBILITY_OPTIONS
+      },
+      {
+        name: "googlePoint",
+        type: "string",
+      },
+      {
+        name: "description",
+        type: "string",
+      },
+      {
+        name: "datetime_start",
+        type: "date",
+      },
+      {
+        name: "datetime_end",
+        type: "date",
+      },
+      {
+        name: "period",
+        type: "date",
+      },
+      {
+        name: "repeatUntil",
+        type: "date",
+      },
+    ]);
   } catch (error) {
     if (error instanceof ValidationError) {
       return res.status(400).json({ message: error.message, details: error.details });
@@ -210,14 +230,14 @@ exports.updateEvent = async (req, res) => {
     return res.status(500).json({ message: 'Failed to validate event payload.' });
   }
 
-  if (!Object.keys(updateFields).length) {
+  if (!Object.keys(payload).length) {
     return res.status(400).json({ message: 'No update fields provided.' });
   }
 
   try {
     const result = await getCollection().updateOne(
       { _id: ObjectId.createFromHexString(id) },
-      { $set: updateFields },
+      { $set: payload },
     );
 
     if (!result.matchedCount) {
