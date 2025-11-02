@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongodb');
 const mongodb = require('../db');
-const { validateUserPayload } = require('../utils/errors');
+const { validateUserPayload, ValidationError } = require('../utils/errors');
 
 const USERS_COLLECTION = 'users';
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

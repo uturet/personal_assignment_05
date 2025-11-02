@@ -1,14 +1,16 @@
-const swaggerAutogen = require('swagger-autogen')();
+const swaggerAutogen = require('swagger-autogen')({ openapi: '3.0.0' });
 
 const doc = {
-  openapi: '3.0.0',
   info: {
     title: 'Events Service API',
     description:
       'API for managing users and events with subscription-driven visibility.',
   },
-  host: 'localhost:8080',
-  schemes: ['http'],
+  servers: [
+    {
+      url: 'http://localhost:8080',
+    },
+  ],
 };
 
 const outputFile = './swagger-output.json';

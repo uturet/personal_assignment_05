@@ -1,65 +1,11 @@
 const { ObjectId } = require('mongodb');
 const mongodb = require('../db');
-const { ValidationError } = require('../utils/errors');
+const { validateUserPayload, ValidationError } = require('../utils/errors');
 
 const EVENTS_COLLECTION = 'events';
-const VISIBILITY_OPTIONS = new Set(['public', 'subscribers', 'private']);
+const VISIBILITY_OPTIONS = ['public', 'subscribers', 'private'];
 
 const getCollection = () => mongodb.getDb().collection(EVENTS_COLLECTION);
-
-const ensurePlainObject = (value) =>
-  value && typeof value === 'object' && !Array.isArray(value) ? value : null;
-
-const buildEventDocument = (payload) => {
-  const body = ensurePlainObject(payload);
-
-  if (!body) {
-    throw createFieldError('body', 'Request body must be a JSON object.');
-  }
-
-  const document = {};
-
-  document.ownerID = parseOwnerId(body.ownerID);
-
-  const visibility = parseStringField(body.visibility, 'visibility');
-  if (!VISIBILITY_OPTIONS.has(visibility)) {
-    throw createFieldError(
-      'visibility',
-      "visibility must be one of: 'public', 'subscribers', or 'private'.",
-    );
-  }
-  document.visibility = visibility;
-
-  document.googlePoint = parseStringField(body.googlePoint, 'googlePoint');
-  document.description = parseStringField(body.description, 'description');
-  document.datetime_start = parseDateField(body.datetime_start, 'datetime_start');
-  document.datetime_end = parseDateField(body.datetime_end, 'datetime_end');
-  document.period = parseDateField(body.period, 'period');
-  document.repeatUntil = parseDateField(body.repeatUntil, 'repeatUntil');
-
-  if (document.datetime_end < document.datetime_start) {
-    throw createFieldError(
-      'datetime_end',
-      'datetime_end must be greater than datetime_start.',
-    );
-  }
-
-  if (document.repeatUntil < document.datetime_start) {
-    throw createFieldError(
-      'repeatUntil',
-      'repeatUntil must be greater than datetime_start.',
-    );
-  }
-
-  if (document.repeatUntil < document.datetime_end) {
-    throw createFieldError(
-      'repeatUntil',
-      'repeatUntil must be on or after datetime_end.',
-    );
-  }
-
-  return document;
-};
 
 const formatEvent = (doc) => ({
   id: doc._id.toString(),
