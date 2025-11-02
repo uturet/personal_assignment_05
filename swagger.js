@@ -9,6 +9,11 @@ const doc = {
   servers: [
     {
       url: 'http://localhost:8080',
+      description: 'Local server',
+    },
+    {
+      url: 'https://personal-assignment-05.onrender.com',
+      description: 'Production server',
     },
   ],
 };
