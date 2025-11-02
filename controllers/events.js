@@ -115,6 +115,39 @@ exports.getEvent = async (req, res) => {
 exports.createEvent = async (req, res) => {
   /*
     #swagger.description = 'Create new event'
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            required: [
+              'ownerID',
+              'visibility',
+              'description',
+              'datetime_start',
+              'datetime_end'
+            ],
+            properties: {
+              ownerID: {
+                type: 'string',
+                pattern: '^[0-9a-fA-F]{24}$'
+              },
+              visibility: {
+                type: 'string',
+                enum: ['public', 'subscribers', 'private']
+              },
+              googlePoint: { type: 'string' },
+              description: { type: 'string' },
+              datetime_start: { type: 'string', format: 'date-time' },
+              datetime_end: { type: 'string', format: 'date-time' },
+              period: { type: 'string', format: 'date-time' },
+              repeatUntil: { type: 'string', format: 'date-time' }
+            }
+          }
+        }
+      }
+    }
   */
   let payload;
 
@@ -180,6 +213,28 @@ exports.createEvent = async (req, res) => {
 exports.updateEvent = async (req, res) => {
   /*
     #swagger.description = 'Update an event by id'
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            properties: {
+              visibility: {
+                type: 'string',
+                enum: ['public', 'subscribers', 'private']
+              },
+              googlePoint: { type: 'string' },
+              description: { type: 'string' },
+              datetime_start: { type: 'string', format: 'date-time' },
+              datetime_end: { type: 'string', format: 'date-time' },
+              period: { type: 'string', format: 'date-time' },
+              repeatUntil: { type: 'string', format: 'date-time' }
+            }
+          }
+        }
+      }
+    }
   */
   const { id } = req.params;
 
@@ -190,7 +245,7 @@ exports.updateEvent = async (req, res) => {
   let payload;
 
   try {
-    payload = payload = validateUserPayload(req.body, [
+    payload = validateUserPayload(req.body, [
       {
         name: "visibility",
         type: "options",

@@ -56,6 +56,26 @@ exports.getUser = async (req, res) => {
 exports.createUser = async (req, res) => {
   /*
     #swagger.description = 'Create new user'
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            required: ['first_name', 'last_name', 'email', 'subscribet_to'],
+            properties: {
+              first_name: { type: 'string' },
+              last_name: { type: 'string' },
+              email: { type: 'string', format: 'email' },
+              subscribet_to: {
+                type: 'array',
+                items: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' }
+              }
+            }
+          }
+        }
+      }
+    }
   */
   let payload;
 
@@ -116,6 +136,25 @@ exports.createUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   /*
     #swagger.description = 'Update a user by id'
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: 'object',
+            properties: {
+              first_name: { type: 'string' },
+              last_name: { type: 'string' },
+              email: { type: 'string', format: 'email' },
+              subscribet_to: {
+                type: 'array',
+                items: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' }
+              }
+            }
+          }
+        }
+      }
+    }
   */
   const { id } = req.params;
 

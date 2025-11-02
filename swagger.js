@@ -1,6 +1,7 @@
 const swaggerAutogen = require('swagger-autogen')();
 
 const doc = {
+  openapi: '3.0.0',
   info: {
     title: 'Events Service API',
     description:
