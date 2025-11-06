@@ -13,7 +13,7 @@ const swaggerDocs = require('./swagger-output.json');
 
 
 passport.serializeUser((user, done) => {
-  done(null, { id: user.id, displayName: user.displayName, emails: user.emails });
+  done(null, { id: user.id, firstName: user.givenName, lastName: user.familyName, emails: user.emails });
 });
 passport.deserializeUser((obj, done) => {
   done(null, obj);
@@ -33,31 +33,21 @@ passport.use(new GoogleStrategy(
       result = await Users.insertOne({
         googleId: profile.id,
         email: profile.emails[0].value,
-        displayName: profile.displayName,
-        name: profile.name,
+        firstName: profile.name.givenName,
+        lastName: profile.name.familyName,
         avatar: profile.photos[0].value,
         createdAt: new Date(),
         subscribetTo: []
       });
       id = result.insertedId.toString()
-    } else if (user.displayName !== profile.displayName || user.avatar !== profile.photos[0].value) {
+    } else {
       id = user._id.toString()
-      await Users.updateOne(
-        { _id: user._id },
-        {
-          $set: {
-            displayName: profile.displayName,
-            name: profile.name,
-            avatar: profile.photos?.[0]?.value || user.avatar
-          }
-        }
-      );
     }
 
     const userRecord = {
       id: id,
-      displayName: profile.displayName,
-      name: profile.name,
+      firstName: profile.name.givenName,
+      lastName: profile.name.familyName,
       avatar: profile.photos[0].value,
     };
 

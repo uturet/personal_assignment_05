@@ -17,13 +17,15 @@ const toHexString = (value) => {
 
 const formatUser = (doc) => ({
   id: toHexString(doc._id),
-  first_name: doc.first_name,
-  last_name: doc.last_name,
+  firstName: doc.firstName,
+  lastName: doc.lastName,
+  avatar: doc.avatar,
   email: doc.email,
-  subscribet_to: Array.isArray(doc.subscribet_to)
-    ? doc.subscribet_to.map((subscriptionId) => toHexString(subscriptionId))
+  subscribetTo: Array.isArray(doc.subscribetTo)
+    ? doc.subscribetTo.map((subscriptionId) => toHexString(subscriptionId))
     : [],
 });
+
 
 const mapSubscriptionsToObjectIds = (subscriptionIds = []) =>
   subscriptionIds.map((id) => ObjectId.createFromHexString(id));
@@ -53,86 +55,6 @@ exports.getUser = async (req, res) => {
   }
 };
 
-exports.createUser = async (req, res) => {
-  /*
-    #swagger.description = 'Create new user'
-    #swagger.requestBody = {
-      required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: 'object',
-            required: ['first_name', 'last_name', 'email', 'subscribet_to'],
-            properties: {
-              first_name: { type: 'string' },
-              last_name: { type: 'string' },
-              email: { type: 'string', format: 'email' },
-              subscribet_to: {
-                type: 'array',
-                items: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' }
-              }
-            }
-          }
-        }
-      }
-    }
-  */
-  let payload;
-
-  try {
-    payload = validateUserPayload(req.body, [
-      {
-        name: "first_name",
-        type: "string",
-        required: true,
-      },
-      {
-        name: "last_name",
-        type: "string",
-        required: true,
-      },
-      {
-        name: "email",
-        type: "email",
-        required: true,
-      },
-      {
-        name: "subscribet_to",
-        type: "ownerId",
-        required: true,
-      },
-    ]);
-  } catch (error) {
-    if (error instanceof ValidationError) {
-      return res.status(400).json({ message: error.message, details: error.details });
-    }
-
-    console.error('Unexpected validation error while creating user', error);
-    return res.status(500).json({ message: 'Failed to validate user payload.' });
-  }
-
-  try {
-    const collection = getCollection();
-    const existing = await collection.findOne({ email: payload.email });
-    if (existing) {
-      return res.status(409).json({ message: 'A user with that email already exists.' });
-    }
-
-    const userDocument = {
-      first_name: payload.first_name,
-      last_name: payload.last_name,
-      email: payload.email,
-      subscribet_to: mapSubscriptionsToObjectIds(payload.subscribet_to),
-    };
-
-    const result = await collection.insertOne(userDocument);
-    return res.status(201).json({ id: result.insertedId.toString() });
-  } catch (error) {
-    console.error('Error creating user', error);
-    return res.status(500).json({ message: 'Failed to create user.' });
-  }
-};
-
 exports.updateUser = async (req, res) => {
   /*
     #swagger.description = 'Update a user by id'
@@ -143,8 +65,9 @@ exports.updateUser = async (req, res) => {
           schema: {
             type: 'object',
             properties: {
-              first_name: { type: 'string' },
-              last_name: { type: 'string' },
+              firstName: { type: 'string' },
+              lastName: { type: 'string' },
+              avatar: { type: 'string' },
               email: { type: 'string', format: 'email' },
               subscribet_to: {
                 type: 'array',
@@ -167,11 +90,15 @@ exports.updateUser = async (req, res) => {
   try {
     payload = validateUserPayload(req.body, [
       {
-        name: "first_name",
+        name: "firstName",
         type: "string",
       },
       {
-        name: "last_name",
+        name: "lastName",
+        type: "string",
+      },
+      {
+        name: "avatar",
         type: "string",
       },
       {
@@ -179,7 +106,7 @@ exports.updateUser = async (req, res) => {
         type: "email",
       },
       {
-        name: "subscribet_to",
+        name: "subscribetTo",
         type: "ownerId",
       },
     ]);
@@ -194,17 +121,20 @@ exports.updateUser = async (req, res) => {
 
   const updateDocument = {};
 
-  if (payload.first_name !== undefined) {
-    updateDocument.first_name = payload.first_name;
+  if (payload.firstName !== undefined) {
+    updateDocument.firstName = payload.firstName;
   }
-  if (payload.last_name !== undefined) {
-    updateDocument.last_name = payload.last_name;
+  if (payload.lastName !== undefined) {
+    updateDocument.lastName = payload.lastName;
+  }
+  if (payload.avatar !== undefined) {
+    updateDocument.avatar = payload.avatar;
   }
   if (payload.email !== undefined) {
     updateDocument.email = payload.email;
   }
-  if (payload.subscribet_to !== undefined) {
-    updateDocument.subscribet_to = mapSubscriptionsToObjectIds(payload.subscribet_to);
+  if (payload.subscribetTo !== undefined) {
+    updateDocument.subscribetTo = mapSubscriptionsToObjectIds(payload.subscribetTo);
   }
 
   try {
