@@ -138,7 +138,7 @@ exports.createEvent = async (req, res) => {
   }
 
   try {
-    payload.ownerID = req.session.user.id
+    payload.ownerID = req.user.id
     const result = await getCollection().insertOne(payload);
     return res.status(201).json({ id: result.insertedId.toString() });
   } catch (error) {
