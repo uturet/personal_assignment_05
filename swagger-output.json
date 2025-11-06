@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Events Service API",
+    "title": "Event Scheduler",
     "description": "API for managing users and events with subscription-driven visibility.",
     "version": "1.0.0"
   },
@@ -72,6 +72,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
             "description": "Not Found"
@@ -176,17 +179,12 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "ownerID",
                   "visibility",
                   "description",
                   "datetime_start",
                   "datetime_end"
                 ],
                 "properties": {
-                  "ownerID": {
-                    "type": "string",
-                    "pattern": "^[0-9a-fA-F]{24}$"
-                  },
                   "visibility": {
                     "type": "string",
                     "enum": [
@@ -349,5 +347,38 @@
         }
       }
     }
-  }
+  },
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sid"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "googleOAuth": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+            "tokenUrl": "https://oauth2.googleapis.com/token",
+            "scopes": {
+              "openid": "OpenID scope",
+              "email": "Access to email",
+              "profile": "Access to basic profile"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "cookieAuth": []
+    }
+  ]
 }
