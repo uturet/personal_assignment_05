@@ -90,17 +90,20 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "first_name": {
+                  "firstName": {
                     "type": "string"
                   },
-                  "last_name": {
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "avatar": {
                     "type": "string"
                   },
                   "email": {
                     "type": "string",
                     "format": "email"
                   },
-                  "subscribet_to": {
+                  "subscribetTo": {
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -137,60 +140,6 @@
           },
           "500": {
             "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/users/": {
-      "post": {
-        "description": "Create new user",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "409": {
-            "description": "Conflict"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "first_name",
-                  "last_name",
-                  "email",
-                  "subscribet_to"
-                ],
-                "properties": {
-                  "first_name": {
-                    "type": "string"
-                  },
-                  "last_name": {
-                    "type": "string"
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email"
-                  },
-                  "subscribet_to": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "pattern": "^[0-9a-fA-F]{24}$"
-                    }
-                  }
-                }
-              }
-            }
           }
         }
       }

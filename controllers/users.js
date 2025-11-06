@@ -69,7 +69,7 @@ exports.updateUser = async (req, res) => {
               lastName: { type: 'string' },
               avatar: { type: 'string' },
               email: { type: 'string', format: 'email' },
-              subscribet_to: {
+              subscribetTo: {
                 type: 'array',
                 items: { type: 'string', pattern: '^[0-9a-fA-F]{24}$' }
               }
