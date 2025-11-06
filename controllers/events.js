@@ -68,17 +68,12 @@ exports.createEvent = async (req, res) => {
           schema: {
             type: 'object',
             required: [
-              'ownerID',
               'visibility',
               'description',
               'datetime_start',
               'datetime_end'
             ],
             properties: {
-              ownerID: {
-                type: 'string',
-                pattern: '^[0-9a-fA-F]{24}$'
-              },
               visibility: {
                 type: 'string',
                 enum: ['public', 'subscribers', 'private']
@@ -99,11 +94,6 @@ exports.createEvent = async (req, res) => {
 
   try {
     payload = validateUserPayload(req.body, [
-      {
-        name: "ownerID",
-        type: "ownerId",
-        required: true,
-      },
       {
         name: "visibility",
         type: "options",
@@ -148,6 +138,7 @@ exports.createEvent = async (req, res) => {
   }
 
   try {
+    payload.ownerID = req.session.user.id
     const result = await getCollection().insertOne(payload);
     return res.status(201).json({ id: result.insertedId.toString() });
   } catch (error) {

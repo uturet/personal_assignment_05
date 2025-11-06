@@ -84,6 +84,9 @@ exports.updateUser = async (req, res) => {
   if (!ObjectId.isValid(id)) {
     return res.status(400).json({ message: 'Invalid user id format.' });
   }
+  if (id !== req.session.user.name) {
+    return res.status(401).json({ message: 'Unaothorized.' });
+  }
 
   let payload;
 

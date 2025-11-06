@@ -103,9 +103,8 @@ app
   .use(cors())
   .use(express.json())
   .use(express.static('public'))
-  .use(ensureLoggedIn)
-  .use('/api-docs', swagger.serve, swagger.setup(swaggerDocs))
-  .use('/', require('./routes'));
+  .use('/api-docs', ensureLoggedIn, swagger.serve, swagger.setup(swaggerDocs))
+  .use('/', ensureLoggedIn, require('./routes'));
 
 mongodb.initDb((err, mongodb) => {
   if (err) {
